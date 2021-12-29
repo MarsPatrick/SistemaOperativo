@@ -9,57 +9,78 @@ int jugadores(int x);
 
 int main(){
     int x,y,z,cont,cont1,temp,tam,jug;
-    jug = 2;
+
+    //Ingresar cantidad jugadores
+    jug = 4;
+    while (jug < 2 || jug > 4)
+    {
+        printf("Ingrese Numero Jugadores: ");
+        //scan numero jugadores
+        //jug = scan
+    }
+
+    //Iniciar la matriz
     x = jugadores(jug);
     y = jugadores(jug);
-    z = nvalores(x);
-    tam = nvalores(x);
     int matriz[x][y];
-    int valores[z],posicion[z];
+
+    //Generar los numeros aleatorios
+    z = nvalores(x); 
+    int valores[z];
     cont = 0;
     while(z > 0){
         temp = naleatorio(50,1);
         if(cont > 0){
-            if(existe(valores,cont,temp) == 1){
-                z++;
-                cont--;
+            if(existe(valores,cont,temp) == 0){
+                valores[cont] = temp;
+                z--;
+                cont++;
             }
+        }else{
+            valores[cont] = temp;
+            z--;
+            cont++;
         }
-        valores[cont] = temp;
-        z--;
-        cont++;
     }
+    
+    //Generar posiciones aleatorias para los numeros
     z = nvalores(x);
+    int posicion[z];
     cont = 0;
     while(z > 0){
-        temp = naleatorio((x*y),0);
+        temp = naleatorio((x*y),1);
         if(cont > 0){
-            if(existe(posicion,cont,temp) == 1){
-                z++;
-                cont--;
+            if(existe(posicion,cont,temp) == 0){
+                posicion[cont] = temp;
+                z--;
+                cont++;
             }
+        }else{
+            posicion[cont] = temp;
+            z--;
+            cont++;
         }
-        posicion[cont] = temp;
-        z--;
-        cont++;
+        
     }
 
+    //Imprimir los numeros
     for(int a = 0 ; a < nvalores(x) ; a++){
         printf("%d ",valores[a]);
     }
     printf("\n");
 
+    //Imprimir las posiciones
     for(int a = 0 ; a < nvalores(x) ; a++){
         printf("%d ",posicion[a]);
     }
     printf("\n");
 
-
+    //Llenar la matriz con los numeros en sus respectivas posiciones
     cont = 1;
     cont1 = 0;
     for(int a = 0 ; a < x ; a++){
         for(int b = 0 ; b < y ; b++){
-            if(existe(posicion,tam,cont)==1){
+            if(existe(posicion,nvalores(x),cont)==1){
                 matriz[a][b] = valores[cont1];
                 cont1++;
                 printf("%d %d\n",matriz[a][b],cont);
@@ -70,6 +91,7 @@ int main(){
         }
     }
 
+    //Imprimir la matriz
     for(int a = 0 ; a < x ; a++){
         for(int b = 0 ; b < y ; b++){
             if(matriz[a][b] < 10){
