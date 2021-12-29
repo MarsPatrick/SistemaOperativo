@@ -5,11 +5,13 @@
 int naleatorio();
 int nvalores(int x);
 int existe(int x[],int y, int z);
+int jugadores(int x);
 
 int main(){
-    int x,y,z,cont,cont1,temp,tam;
-    x = 12;
-    y = 12;
+    int x,y,z,cont,cont1,temp,tam,jug;
+    jug = 2;
+    x = jugadores(jug);
+    y = jugadores(jug);
     z = nvalores(x);
     tam = nvalores(x);
     int matriz[x][y];
@@ -108,4 +110,16 @@ int existe(int x[] , int y , int z){
         }
     }
     return 0;
+}
+
+int jugadores(int x){
+    if(x == 2){
+        return 8;
+    }
+    if(x == 3){
+        return 10;
+    }
+    if(x == 4){
+        return 12;
+    }
 }
