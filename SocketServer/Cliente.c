@@ -11,7 +11,7 @@
 
 int main(){
 
-	int clientSocket, ret;
+	int clientSocket, ret, primer;
 	struct sockaddr_in serverAddr;
 	char buffer[1024];
 
@@ -33,12 +33,16 @@ int main(){
 		exit(1);
 	}
 	printf("[+]Connected to Server.\n");
-
+	primer=0;
 	while(1){
-
+		if(primer==0){
+			strcpy(buffer,"MensajePrueba");
+			send(clientSocket, buffer, strlen(buffer), 0);
+			primer=2;
+		}
 		//Imprime para que escriba
 		printf("Client: \t");
-		scanf("%s", &buffer[0]);
+		scanf(" %s", &buffer[0]);
 
 		//Manda lo que escribe
 		send(clientSocket, buffer, strlen(buffer), 0);

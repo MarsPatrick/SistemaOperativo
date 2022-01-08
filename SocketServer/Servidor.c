@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #define PORT 4444
 int naleatorio();
@@ -15,64 +16,20 @@ int jugadores(int x);
 
 int main(){
 
-	int sockfd, ret;
+	int sockfd, ret, newSocket;
 	struct sockaddr_in serverAddr;
-	int newSocket;
 	struct sockaddr_in newAddr;
 	socklen_t addr_size;
 	
-	int fd1[2];
-	int fd2[2];
+	int fd1[2],fd2[2];
+	int x,y,z,cont,cont1,temp,tam,jug,primer;
 	int tube1 = pipe(fd1);
 	int tube2 = pipe(fd2);
 	char buffer[1024];
 	pid_t childpid;
-
-	if(tube1 < 0) {
-        printf("Error al crear pipe 1\n");
-        exit(1);
-    }
-	if(tube2 < 0) {
-        printf("Error al crear pipe 2\n");
-        exit(1);
-    }
-
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if(sockfd < 0){
-		printf("[-]Error in connection.\n");
-		exit(1);
-	}
-	printf("[+]Server Socket is created.\n");
-
-	memset(&serverAddr, '\0', sizeof(serverAddr));
-	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(PORT);
-	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-	ret = bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
-	if(ret < 0){
-		printf("[-]Error in binding.\n");
-		exit(1);
-	}
-	printf("[+]Bind to port %d\n", 4444);
-
-	if(listen(sockfd, 10) == 0){
-		printf("[+]Listening....\n");
-	}else{
-		printf("[-]Error in binding.\n");
-	}
-
-  
-	int x,y,z,cont,cont1,temp,tam,jug;
-
+	
     //Ingresar cantidad jugadores
     jug = 4;
-    while (jug < 2 || jug > 4)
-    {
-        printf("Ingrese Numero Jugadores: ");
-        //scan numero jugadores
-        //jug = scan
-    }
 
     //Iniciar la matriz
     x = jugadores(jug);
@@ -119,16 +76,16 @@ int main(){
     }
 
     //Imprimir los numeros
-    for(int a = 0 ; a < nvalores(x) ; a++){
+    /*for(int a = 0 ; a < nvalores(x) ; a++){
         printf("%d ",valores[a]);
     }
-    printf("\n");
+    printf("\n");*/
 
     //Imprimir las posiciones
-    for(int a = 0 ; a < nvalores(x) ; a++){
+    /*for(int a = 0 ; a < nvalores(x) ; a++){
         printf("%d ",posicion[a]);
     }
-    printf("\n");
+    printf("\n");*/
 
     //Llenar la matriz con los numeros en sus respectivas posiciones
     cont = 1;
@@ -138,7 +95,7 @@ int main(){
             if(existe(posicion,nvalores(x),cont)==1){
                 matriz[a][b] = valores[cont1];
                 cont1++;
-                printf("%d %d\n",matriz[a][b],cont);
+                //printf("%d %d\n",matriz[a][b],cont);
             }else{
                 matriz[a][b] = 0;
             }
@@ -147,7 +104,7 @@ int main(){
     }
 
     //Imprimir la matriz
-    for(int a = 0 ; a < x ; a++){
+    /*for(int a = 0 ; a < x ; a++){
         for(int b = 0 ; b < y ; b++){
             if(matriz[a][b] < 10){
                 printf("[0%d]",matriz[a][b]);
@@ -157,15 +114,42 @@ int main(){
             
         }
         printf("\n");
-    }
-  
-  
-  
-  
-  
-  
-    int x = 1;
+    }*/
 
+	if(tube1 < 0) {
+        printf("Error al crear pipe 1\n");
+        exit(1);
+    }
+	if(tube2 < 0) {
+        printf("Error al crear pipe 2\n");
+        exit(1);
+    }
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if(sockfd < 0){
+		printf("[-]Error en la conexion.\n");
+		exit(1);
+	}
+	printf("[+]Server Socket esta creado.\n");
+
+	memset(&serverAddr, '\0', sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(PORT);
+	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+
+	ret = bind(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	if(ret < 0){
+		printf("[-]Error al vincular.\n");
+		exit(1);
+	}
+	printf("[+]Vincular al puerto%d\n", 4444);
+
+	if(listen(sockfd, 10) == 0){
+		printf("[+]Escuchando....\n");
+	}else{
+		printf("[-]Error al vincular.\n");
+	}
+    primer=0;
 	while(1){
 		newSocket = accept(sockfd, (struct sockaddr*)&newAddr, &addr_size);
 		if(newSocket < 0){
@@ -173,13 +157,10 @@ int main(){
 		}
 		//Imprime que se conecto un cliente
         printf("Connection accepted from %s:%d\n", inet_ntoa(newAddr.sin_addr), ntohs(newAddr.sin_port));
-
         //aqui agregar un contador de los clientes conectados
 		//if(conectados=cantidadjugadores) hacer las cosas
-
 		if((childpid = fork()) == 0){
 			close(sockfd);
-
 			while(1){
 				//Recibe datos del cliente
 				recv(newSocket, buffer, 1024, 0);
@@ -189,49 +170,51 @@ int main(){
 					break;
 				}else{
 					//Imprime lo que el cliente mando
-					printf("Client: %s\n", buffer);
-					close(fd1[0]);
-            		close(fd2[1]);
-					if(read(fd2[0],buffer,sizeof(buffer)) > 0) {
-                	printf("El padre dijo: %s\n",buffer);
-            		}
-            		printf("El hijo manda: ");
-            		
+                    if(primer!=0){
+                        printf("Client: %s\n", buffer);
+                        close(fd1[0]);
+                        close(fd2[1]);
 
-            		write(fd1[1],buffer,sizeof(buffer));
+                        //Hijo manda al Padre
+                        write(fd1[1],buffer,sizeof(buffer));
+
+                        //Hijo lee del padre
+                        if(read(fd2[0],buffer,sizeof(buffer)) > 0) {
+                            printf("El padre dijo: %s\n",buffer);
+                        }
+                    }else{
+                        primer++;
+					    bzero(buffer, sizeof(buffer));
+                    }
+					
+					
 
 					//Devuelve lo que se recibio al cliente
 					send(newSocket, buffer, strlen(buffer), 0);
 					bzero(buffer, sizeof(buffer));
 				}
 			}
-		}else{
-			while(1) {
-            close(fd1[1]);
-            close(fd2[0]);
-            printf("El padre manda: ");
-            
-
-            write(fd2[1],buffer,sizeof(buffer));
-
-            if(read(fd1[0],buffer,sizeof(buffer)) > 0) {
-                printf("El hijo escribe: %s\n",buffer);
+        }else{
+            while(1) {
+                close(fd1[1]);
+                close(fd2[0]);
+                
+                //Padre lee del hijo
+                if(read(fd1[0],buffer,sizeof(buffer)) > 0) {
+                    printf("El hijo escribe: %s\n",buffer);
+                }
+                //Padre manda al hijo
+                write(fd2[1],buffer,sizeof(buffer));
             }
-
-        }
 		}
-
 	}
-
 	close(newSocket);
-
-
 	return 0;
 }
 
 int naleatorio(int y , int z){
     int x;
-    srand (time(NULL));
+    //srand (time(NULL));
     x = rand()%y+z;
     return x;
 }
