@@ -18,12 +18,15 @@ int main (void){
 		exit(1);
 	}
 	primer=0;
+	write(fd," ",sizeof(" "));
 	while((n=read(0,buf,sizeof(buf)))>0){
 		if(primer==0){
 			write(fd,mypid,sizeof(mypid));
-			primer++;
+			write(fd," ",sizeof(" "));
+			primer=1;
 		}
 		write(fd,buf,n);
+		write(fd," ",sizeof(" "));
 	}
 	close(fd);
 	exit(0);

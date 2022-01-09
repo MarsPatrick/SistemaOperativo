@@ -121,39 +121,50 @@ int main(void){
 		exit(1);
 	}
     
-	while((n=read(fd,buf,sizeof(buf)))>0){
-        write(1,buf,n);
-	}
+	// while((n=read(fd,buf,sizeof(buf)))>0){
+    //     write(1,buf,n);
+	// }
 
-    // while((n=read(fd,buf,sizeof(buf))>0)){
-    //     if((childpid = fork()) == 0){
-    //         while(1){
-    //             printf("Client: %s\n", buf);
-    //             close(fd1[0]);
-    //             close(fd2[1]);
+    while(1){
+        if((childpid = fork()) == 0){
+            while(1){
+                n=read(fd,buf,sizeof(buf));
+                if(strlen(buf)>1){
+                    printf("Client: %s\n", buf);
+                    printf("Tamano: %ld\n", strlen(buf));
+                    close(fd1[0]);
+                    close(fd2[1]);
 
-    //             //Hijo manda al Padre
-    //             write(fd1[1],buf,sizeof(buf));
+                    //Hijo manda al Padre
+                    write(fd1[1],buf,sizeof(buf));
 
-    //             //Hijo lee del padre
-    //             if(read(fd2[0],buf,sizeof(buf)) > 0) {
-    //                 printf("El padre dijo: %s\n",buf);
-    //             }
-    //         }
-    //     }else{
-    //         while(1) {
-    //             close(fd1[1]);
-    //             close(fd2[0]);
-                
-    //             //Padre lee del hijo
-    //             if(read(fd1[0],buf,sizeof(buf)) > 0) {
-    //                 printf("El hijo escribe: %s\n",buf);
-    //             }
-    //             //Padre manda al hijo
-    //             write(fd2[1],buf,sizeof(buf));
-    //         }
-    //     }
-    // }
+                    //Hijo lee del padre
+                    if(read(fd2[0],buf,sizeof(buf)) > 0) {
+                        printf("El padre dijo: %s\n",buf);
+                    }
+                    //strcpy(buf,"");
+                    bzero(buf,sizeof(buf));
+                }
+            }
+        }else{
+            while(1) {
+                n=read(fd,buf,sizeof(buf));
+                if(strlen(buf)>1){
+                    close(fd1[1]);
+                    close(fd2[0]);
+                    
+                    //Padre lee del hijo
+                    if(read(fd1[0],buf,sizeof(buf)) > 0) {
+                        printf("El hijo escribe: %s\n",buf);
+                    }
+                    //Padre manda al hijo
+                    write(fd2[1],buf,sizeof(buf));
+                    //strcpy(buf,"");
+                    bzero(buf,sizeof(buf));
+                }
+            }
+        }
+    }
     close(fd);
 	exit(0);
 }
