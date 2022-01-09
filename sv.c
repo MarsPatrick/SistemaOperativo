@@ -17,6 +17,10 @@ int jugadores(int x);
 
 int main(void){
 	int x,y,z,cont,cont1,temp,tam,jug;
+    int fd1[2],fd2[2];
+	int tube1 = pipe(fd1);
+	int tube2 = pipe(fd2);
+	pid_t childpid;
 	//Ingresar cantidad jugadores
     jug = 4;
 
@@ -112,18 +116,45 @@ int main(void){
 	// 	perror("mkfifo");
 	// 	exit(1);
 	// }
-
 	if((fd=open(FIFONAME,O_RDWR))<0){
 		perror("open");
 		exit(1);
 	}
-
-	//write(fd,matriz,sizeof(matriz));
     
 	while((n=read(fd,buf,sizeof(buf)))>0){
-		write(1,buf,n);
+        write(1,buf,n);
 	}
-	close(fd);
+
+    // while((n=read(fd,buf,sizeof(buf))>0)){
+    //     if((childpid = fork()) == 0){
+    //         while(1){
+    //             printf("Client: %s\n", buf);
+    //             close(fd1[0]);
+    //             close(fd2[1]);
+
+    //             //Hijo manda al Padre
+    //             write(fd1[1],buf,sizeof(buf));
+
+    //             //Hijo lee del padre
+    //             if(read(fd2[0],buf,sizeof(buf)) > 0) {
+    //                 printf("El padre dijo: %s\n",buf);
+    //             }
+    //         }
+    //     }else{
+    //         while(1) {
+    //             close(fd1[1]);
+    //             close(fd2[0]);
+                
+    //             //Padre lee del hijo
+    //             if(read(fd1[0],buf,sizeof(buf)) > 0) {
+    //                 printf("El hijo escribe: %s\n",buf);
+    //             }
+    //             //Padre manda al hijo
+    //             write(fd2[1],buf,sizeof(buf));
+    //         }
+    //     }
+    // }
+    close(fd);
 	exit(0);
 }
 
